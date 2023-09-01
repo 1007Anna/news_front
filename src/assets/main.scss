@@ -1,0 +1,10 @@
+/* Bootstrap */
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../assets/stylesheet/variables";
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(250, 250, 250);
+}
