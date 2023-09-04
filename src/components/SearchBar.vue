@@ -48,14 +48,14 @@ export default {
     <div class="d-flex m-auto mt-5" style="width: 80%;">      
         <div class="input-group flex-nowrap me-3">
             <span class="input-group-text" 
-            style="background-color: rgb(246, 224, 202);">
+            style="background-color: #f6e6df;">
                 標題
             </span>
             <input v-model="keyword" type="text" class="form-control" placeholder="keyword">
         </div>
         <div class="input-group flex-nowrap ">
             <span class="input-group-text"
-            style="background-color: rgb(246, 224, 202);">
+            style="background-color: #f6e6df;">
                 發布時間
             </span>
             <input v-model="startDay" type="date" class="form-control" placeholder="Date">
@@ -65,7 +65,7 @@ export default {
         </div>
         <div class="ms-2">
             <button type="button" class="btn text-white" 
-            style="background-color: rgb(232, 176, 107);"
+            style="background-color: #E2C2B3;"
             @:click="searchNews">
                 Search
             </button>     

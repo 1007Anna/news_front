@@ -61,7 +61,7 @@ export default {
 <template>
     <div class="d-flex justify-content-center">
         <div v-for="(category,index) in categoryList" :key="index" class="py-2 px-4"
-        style="background-color: rgb(232, 227, 222);"
+        style="background-color: #eedad0;"
         @mouseover="showSubcategory(index)"
         @mouseleave="hideSubcategory(index)"
         >

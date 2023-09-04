@@ -60,11 +60,11 @@ export default {
         <!-- Button Area -->
         <div class="">
             <button type="button" class="btn btn-light mx-2"
-            style="background-color: rgb(232, 220, 183);">
+            style="background-color: #e5dcd7;color: white;">
                 Sign up
             </button>
             <RouterLink @click="login()" to="/home" type="button" class="btn btn-light mx-2"
-            style="background-color: rgb(232, 176, 107);">
+            style="background-color: #E2C2B3;color: white;">
                 Log in
             </RouterLink>
         </div>

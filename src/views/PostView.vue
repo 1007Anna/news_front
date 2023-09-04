@@ -5,16 +5,16 @@ export default {
             title: null,
             content: null,
             selectedCategory: null,
+            selectedCategoryID: null,
             selectedSubCategory: null,
             categoryList: [
                 {
-                    categoryName: null,
+                    categoryIdMap: {},
                     subCategoryNameMap: {}
                 },       
             ],
             categoryText: null,
             subCategoryText: null,
-          
         }
     },
     methods: {
@@ -54,7 +54,8 @@ export default {
             .then((data) => {
                 this.categoryList = data;
                 this.categoryList.push({
-                    categoryName: "新增主分類",
+                    // categoryName: "新增主分類",
+                    categoryIdMap: { "新增主分類": 0 }
                     
                 })
                 // 儲存原本"categoryList[0]"的值
@@ -65,11 +66,12 @@ export default {
                 this.categoryList[6] = categoryIndex0;
             })           
         },
-        addCategory(){
+        addCategorySubCategory(){
             let body = {
-                "categoryName": this.categoryText
+                "categoryName":this.categoryText,
+                "subCategoryName":this.subCategoryText
             }
-            fetch('http://localhost:8080/addCategory', {
+            fetch('http://localhost:8080/addCategoryAndSubCategory', {
                 method: 'POST',
                 // 連結後端跟前端的session
                 credentials: 'include',
@@ -85,11 +87,12 @@ export default {
                 if(data.message !== undefined){
                     alert(data.message)
                 }
+                location.reload();
             })
         },
         addSubCategory(){
             let body = {
-                "categoryID":1,
+                "categoryID":this.selectedCategoryID,
                 "subCategoryName": this.subCategoryText
             }
             fetch('http://localhost:8080/addSubCategory', {
@@ -108,29 +111,37 @@ export default {
                 if(data.message !== undefined){
                     alert(data.message)
                 }
+                location.reload();
             })
+        },
+        updateCategoryID() {
+            // 更新 selectedCategoryID
+            const selectedCategoryObj = this.categoryList.find(
+                (category) => Object.keys(category.categoryIdMap)[0] === this.selectedCategory
+            );
+            if (selectedCategoryObj) {
+                this.selectedCategoryID = selectedCategoryObj.categoryIdMap[this.selectedCategory];
+            } else {
+                // 沒有匹配的值時則設為null
+                this.selectedCategoryID = null;
+            }
+            
         },
     },
     mounted() {
         this.getAllSubCategory()
     },
     computed: {
-        subCategoryNameMapKey() {
-            if (this.selectedCategory) {
-                const selectedCategoryObj = this.categoryList.find(
-                    (category) => category.categoryName === this.selectedCategory
-                );
-                return Object.keys(selectedCategoryObj.subCategoryNameMap);
-            } else {
-                return [];
-            }
-        },
         SubCategoryNameMapValue() {
-            if (this.selectedCategory) {
+            if (this.selectedCategory !== null) {
                 const selectedCategoryObj = this.categoryList.find(
-                    (category) => category.categoryName === this.selectedCategory
+                    (category) => category.categoryIdMap[this.selectedCategory] !== undefined
                 );
-                return selectedCategoryObj.subCategoryNameMap;
+                if (selectedCategoryObj) {
+                    return selectedCategoryObj.subCategoryNameMap;
+                } else {
+                    return {};
+                }
             } else {
                 return {};
             }
@@ -141,34 +152,36 @@ export default {
 </script>
 
 <template>
-                {{ categoryList }}<br>{{ selectedCategory }}{{ selectedSubCategory }}
-    
-    <div class="d-flex justify-content-center my-5">
+    <div class="d-flex justify-content-center mt-6 mb-3">
         <div class="d-flex flex-column justify-content-center col-8">
             <div class="d-flex justify-content-center mb-3">   
                 <select v-model="selectedCategory"
                 class="input-group flex-nowrap form-select col me-3"
-                aria-label="Default select example">
-                    <option v-for="(category,index) in categoryList" :key="index">
-                        {{ category.categoryName }}
+                aria-label="Default select example"
+                @change="updateCategoryID">
+                    <option v-for="(categoryName, categoryID) in categoryList" 
+                    :key="categoryID" >
+                        {{ Object.keys(categoryName.categoryIdMap)[0] }}
                     </option>
                 </select>
                 <select v-if="selectedCategory" v-model="selectedSubCategory"
                 class="input-group flex-nowrap form-select col ms-3"
                 aria-label="Default select example">
                     <option >新增子分類</option>
-                    <option v-for="(value,subCategory) in SubCategoryNameMapValue" 
-                    :key="value" :value="value">
-                        {{ subCategory }}
+                    <option v-for="(subCategoryID,subCategoryName) in SubCategoryNameMapValue" 
+                    :key="subCategoryID" :value="subCategoryID">
+                        {{ subCategoryName }}
                     </option>
                 </select>
             </div>
             <div v-if="selectedCategory === '新增主分類' " class="input-group mb-3">
                 <input v-model="categoryText" type="text" class="form-control" placeholder="填寫主分類名稱">
-                <button @click="addCategory()" class="btn btn-outline-secondary" type="button">Add</button>
+                <input v-model="subCategoryText" type="text" class="form-control" placeholder="填寫子分類名稱">
+                <button @click="addCategorySubCategory()" class="btn btn-outline-secondary" type="button">Add</button>
             </div>
 
-            <div v-if="selectedSubCategory === '新增子分類'" class="input-group mb-3">
+            <div v-if="selectedSubCategory === '新增子分類' && selectedCategory !== '新增主分類' " 
+            class="input-group mb-3">
                 <input v-model="subCategoryText" type="text" class="form-control" placeholder="填寫子分類名稱">
                 <button @click="addSubCategory()" class="btn btn-outline-secondary" type="button">Add</button>
             </div>
@@ -180,7 +193,7 @@ export default {
             </div>
         </div>     
     </div>
-    <div class="d-flex justify-content-center my-3 ">
+    <div class="d-flex justify-content-center my-2">
         <div class="card text-center col-8">
             <div class="card-header">
                 內文
