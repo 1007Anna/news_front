@@ -64,8 +64,8 @@ export default {
                     </div>
                 </div>         
                 
-                <RouterLink to="/home" @click="switchLocation(5)" class="navBtn" :class="{target: location === 5}">
-                    問題回報
+                <RouterLink to="/classify" @click="switchLocation(5)" class="navBtn" :class="{target: location === 5}">
+                    分類管理
                 </RouterLink>
             </nav>
         </div>

@@ -59,9 +59,9 @@ export default {
 }
 </script>
 <template>
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center m-auto" 
+    style="width: 90%;background-color: #eedad0;">
         <div v-for="(category,index) in categoryList" :key="index" class="py-2 px-4"
-        style="background-color: #eedad0;"
         @mouseover="showSubcategory(index)"
         @mouseleave="hideSubcategory(index)"
         >

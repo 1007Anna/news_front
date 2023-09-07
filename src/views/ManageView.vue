@@ -22,15 +22,18 @@ export default {
             selectedCategory: null,
             // 子分類select
             selectedSubCategory: null,
+            // 被選取的CategoryID
+            selectedCategoryID: null,
             // getAllSubCategory()的data格式
             categoryList: [
                 {
-                    categoryName: null,
+                    categoryIdMap: {},
                     subCategoryNameMap: {}
                 },       
             ],
             selectedSubCategory: null,
-        
+            categoryText: null,
+            subCategoryText: null,
         }
     },
     methods: {
@@ -71,7 +74,8 @@ export default {
                 if(data.message !== undefined){
                     alert(data.message)
                 }
-                console.log(news_id);
+                // console.log(news_id);
+                location.reload();
             })
         }, 
         eidtNews(){
@@ -98,6 +102,7 @@ export default {
                 if(data.message !== undefined){
                     alert(data.message)
                 }
+                location.reload();
             })
         },
         updatedNewsList(updatedNewsList) {
@@ -119,8 +124,20 @@ export default {
             })
             .then((data) => {
                 this.categoryList = data;
-
             })
+        },
+        
+        updateCategoryID(){
+            // 更新 selectedCategoryID
+            const selectedCategoryObj = this.categoryList.find(
+                (category) => Object.keys(category.categoryIdMap)[0] === this.selectedCategory
+            );
+            if (selectedCategoryObj) {
+                this.selectedCategoryID = selectedCategoryObj.categoryIdMap[this.selectedCategory];
+            } else {
+                // 沒有匹配的值時則設為null
+                this.selectedCategoryID = null;
+            }
         },
         
     },
@@ -130,11 +147,15 @@ export default {
     },
     computed: {
         SubCategoryNameMapValue() {
-            if (this.selectedCategory) {
+            if (this.selectedCategory !== null) {
                 const selectedCategoryObj = this.categoryList.find(
-                    (category) => category.categoryName === this.selectedCategory
+                    (category) => category.categoryIdMap[this.selectedCategory] !== undefined
                 );
-                return selectedCategoryObj.subCategoryNameMap;
+                if (selectedCategoryObj) {
+                    return selectedCategoryObj.subCategoryNameMap;
+                } else {
+                    return {};
+                }
             } else {
                 return {};
             }
@@ -147,7 +168,7 @@ export default {
 
     <!-- NewsSelect -->
     <div class="d-flex flex-column m-auto my-4"
-    style="height: 15%;width: 70%;background-color: #e0dbd9;" 
+    style="height: 15%;width: 70%;background-color: #eedad0;" 
     v-for="item in newsList"
     :key="item.news_id"
     :value="item.news_id">
@@ -168,7 +189,7 @@ export default {
             <div class=" btn-group-sm my-auto mx-2"
             style="width: 20%;">
                 <button type="button" class="btn text-white h-50 ms-3 me-3"
-                style="background-color: rgb(230, 202, 168);"
+                style="background-color: #f0b8a0;"
                 @click="reviseSwitch(item.news_id)">
                     編輯
                 </button>
@@ -197,24 +218,27 @@ export default {
         <div class="d-flex flex-column justify-content-center"
         style="height: 120%; width: 600px;">
             <div class="d-flex flex-column justify-content-center mx-5">
-                <div class="d-flex">
+                <div class="d-flex mb-3">
                     <select v-model="selectedCategory"
                     class="input-group flex-nowrap form-select col me-3"
-                    aria-label="Default select example">
-                        <option v-for="(category,index) in categoryList" :key="index">
-                            {{ category.categoryName }}
+                    aria-label="Default select example"
+                    @change="updateCategoryID">
+                        <option v-for="(categoryName, categoryID) in categoryList" 
+                        :key="categoryID">
+                            {{ Object.keys(categoryName.categoryIdMap)[0] }}
                         </option>
-                    </select>
-    
-                    <select v-if="selectedCategory" v-model="selectedSubCategory"
+                    </select>    
+                    <select v-if="selectedCategory && selectedCategory !== '修改主分類名稱'" 
+                    v-model="selectedSubCategory"
                     class="input-group flex-nowrap form-select col ms-3"
                     aria-label="Default select example">
-                        <option v-for="(value,subCategory) in SubCategoryNameMapValue" 
-                        :key="value" :value="value">
-                            {{ subCategory }}
+                        <option v-for="(subCategoryID,subCategoryName) in SubCategoryNameMapValue" 
+                        :key="subCategoryID" :value="subCategoryID">
+                            {{ subCategoryName }}
                         </option>
                     </select>
                 </div>
+
                 <div class="input-group flex-nowrap my-4">
                     <span class="input-group-text">標題</span>
                     <input v-model="title" type="text" class="form-control">

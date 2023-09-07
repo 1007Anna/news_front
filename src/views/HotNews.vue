@@ -1,12 +1,5 @@
 <script>
-import CategorySelect from "../components/CategorySelect.vue";
-import NewsSelect from "../components/NewsSelect.vue";
-
 export default {
-    components: {
-        CategorySelect,
-        // NewsSelect
-    },
     data() {
         return {
             title: "最新消息",
@@ -23,7 +16,9 @@ export default {
             .then((data) => {
                 this.newsList = data.newsList
                 console.log(this.newsList)
-
+                if(data.message !== undefined){
+                    alert(data.message)
+                }
             })
         },
   	},
@@ -33,9 +28,6 @@ export default {
 };
 </script>
 <template>
-    <CategorySelect />
-    <br />
-    <br />
     <div class="mx-8 fs-2" style="width: 60%;">
         {{ title }}
     </div>
@@ -53,12 +45,12 @@ export default {
         <div class="d-flex justify-content-between">
             <div class="mx-4 my-auto border-end border-secondary border-2" 
             style="width: 20%; color: rgb(95, 61, 7);">
-                {{ item.updateTime }}
+                {{ item.update_time }}
             </div>
             <div class="my-2" style="width: 80%;color: rgb(95, 61, 7);">
                 <div>
                     <div> 
-                        {{ item.categoryName }}&nbsp;>&nbsp;{{ item.subCategoryName }}
+                        {{ item.category_name }}&nbsp;>&nbsp;{{ item.sub_category_name }}
                     </div>
                 </div>
                 {{ item.title }}

@@ -13,8 +13,6 @@ export default {
                     subCategoryNameMap: {}
                 },       
             ],
-            categoryText: null,
-            subCategoryText: null,
         }
     },
     methods: {
@@ -53,66 +51,7 @@ export default {
             })
             .then((data) => {
                 this.categoryList = data;
-                this.categoryList.push({
-                    // categoryName: "新增主分類",
-                    categoryIdMap: { "新增主分類": 0 }
-                    
-                })
-                // 儲存原本"categoryList[0]"的值
-                var categoryIndex0 = this.categoryList[0]; 
-                // 將this.categoryList[6]的值代入this.categoryList[0]
-                this.categoryList[0] = this.categoryList[6]; 
-                // 將categoryIndex0代入this.categoryList[6]
-                this.categoryList[6] = categoryIndex0;
             })           
-        },
-        addCategorySubCategory(){
-            let body = {
-                "categoryName":this.categoryText,
-                "subCategoryName":this.subCategoryText
-            }
-            fetch('http://localhost:8080/addCategoryAndSubCategory', {
-                method: 'POST',
-                // 連結後端跟前端的session
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            })
-            .then((response) => {
-                return response.json()
-            })
-            .then((data) => {
-                if(data.message !== undefined){
-                    alert(data.message)
-                }
-                location.reload();
-            })
-        },
-        addSubCategory(){
-            let body = {
-                "categoryID":this.selectedCategoryID,
-                "subCategoryName": this.subCategoryText
-            }
-            fetch('http://localhost:8080/addSubCategory', {
-                method: 'POST',
-                // 連結後端跟前端的session
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            })
-            .then((response) => {
-                return response.json()
-            })
-            .then((data) => {
-                if(data.message !== undefined){
-                    alert(data.message)
-                }
-                location.reload();
-            })
         },
         updateCategoryID() {
             // 更新 selectedCategoryID
@@ -167,25 +106,12 @@ export default {
                 <select v-if="selectedCategory" v-model="selectedSubCategory"
                 class="input-group flex-nowrap form-select col ms-3"
                 aria-label="Default select example">
-                    <option >新增子分類</option>
                     <option v-for="(subCategoryID,subCategoryName) in SubCategoryNameMapValue" 
                     :key="subCategoryID" :value="subCategoryID">
                         {{ subCategoryName }}
                     </option>
                 </select>
             </div>
-            <div v-if="selectedCategory === '新增主分類' " class="input-group mb-3">
-                <input v-model="categoryText" type="text" class="form-control" placeholder="填寫主分類名稱">
-                <input v-model="subCategoryText" type="text" class="form-control" placeholder="填寫子分類名稱">
-                <button @click="addCategorySubCategory()" class="btn btn-outline-secondary" type="button">Add</button>
-            </div>
-
-            <div v-if="selectedSubCategory === '新增子分類' && selectedCategory !== '新增主分類' " 
-            class="input-group mb-3">
-                <input v-model="subCategoryText" type="text" class="form-control" placeholder="填寫子分類名稱">
-                <button @click="addSubCategory()" class="btn btn-outline-secondary" type="button">Add</button>
-            </div>
-
             <!-- 新增新聞 -->
             <div class="input-group flex-nowrap col">
                 <span class="input-group-text">標題</span>
